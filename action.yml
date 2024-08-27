@@ -1,0 +1,27 @@
+name: 'Ronin Ecosystem Validator'
+description: 'Github Action to validate pull requests for the Ronin Ecosystem Repository'
+author: 'wehmoen-dev'
+branding:
+  icon: 'book'
+  color: 'gray-dark'
+
+inputs:
+  github_token:
+    description: 'The GitHub token to authenticate API requests'
+    required: true
+  slack_webhook_url:
+    description: 'Slack webhook URL for TDS notifications.'
+    required: true
+  app_installation_id:
+    description: 'The installation ID of your GitHub app'
+    required: true
+  app_id:
+    description: 'The app ID of your GitHub app'
+    required: true
+  app_private_key:
+    description: 'The private key of your GitHub app'
+    required: true
+
+runs:
+  using: 'docker'
+  image: 'docker://reg.wehmoen.dev/github/ronin-buddy:v1.0.0'

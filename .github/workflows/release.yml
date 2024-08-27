@@ -1,0 +1,132 @@
+name: Prepare Release
+
+permissions:
+  contents: write
+
+on:
+  release:
+    branches:
+      - master
+    types:
+      - published
+
+jobs:
+  release:
+    name: "Build & Push Docker Image"
+    runs-on: self-hosted
+    outputs:
+      tags: ${{ steps.meta.outputs.tags }}
+      labels: ${{ steps.meta.outputs.labels }}
+      metadata: ${{ steps.meta.outputs.json }}
+      digest: ${{ steps.build_and_push.outputs.digest }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.target_commitish }}
+
+      - name: Setup Docker Metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            reg.wehmoen.dev/github/ronin-buddy
+          tags: |
+            type=schedule
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern=v{{version}}
+            type=semver,pattern=v{{major}}.{{minor}}
+            type=semver,pattern=v{{major}}
+            type=sha
+            type=sha,format=long
+
+      - name: Setup Docker Environment
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Personal Docker Registry
+        uses: docker/login-action@v3
+        with:
+          registry: reg.wehmoen.dev
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+
+      - name: Build and push
+        id: build_and_push
+        uses: docker/build-push-action@v6
+        with:
+          push: ${{ github.event_name == 'release' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  sign_images:
+    name: "Sign Docker Images"
+    runs-on: self-hosted
+    needs: release
+
+    steps:
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@v3.5.0
+
+      - name: Login to Personal Docker Registry
+        uses: docker/login-action@v3
+        with:
+          registry: reg.wehmoen.dev
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+
+      - name: Sign Docker Images
+        run: |
+          images=""
+            for tag in ${TAGS}; do
+                images+="${tag}@${DIGEST} "
+            done
+          cosign sign --yes --key env://COSIGN_PRIVATE_KEY ${images}
+        env:
+          COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
+          COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
+          TAGS: ${{ needs.release.outputs.tags }}
+          DIGEST: ${{ needs.release.outputs.digest }}
+
+  update_release:
+    name: "Update Release Description"
+    runs-on: self-hosted
+    needs: release
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Update Release Description
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { owner, repo } = context.repo;
+            const tagName = context.payload.release.tag_name;
+            
+            core.debug(`Fetching release by tag: ${tagName}`);
+
+            const { data: release } = await github.rest.repos.getReleaseByTag({
+              owner,
+              repo,
+              tag: tagName
+            });
+
+            const metadata = ${{ needs.release.outputs.metadata }};
+            
+            let dockerPulls = '| Docker Images for this Release |\n| --- |\n';
+            
+            for (const tag of metadata.tags) {
+              dockerPulls += `| \`docker pull ${tag}\` |\n`;
+            }
+
+            const body = `${release.body}\n\n---\n\n${dockerPulls}`;
+
+            await github.rest.repos.updateRelease({
+              owner,
+              repo,
+              release_id: release.id,
+              tag_name: release.tag_name,
+              body: body
+            });
