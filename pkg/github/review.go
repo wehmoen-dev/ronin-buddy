@@ -13,6 +13,7 @@ func (c *Client) Review(body string) (*github.PullRequestReview, error) {
 		githubactions.Debugf("Removing review comment: %s", *c.reviewComment.HTMLURL)
 		err := c.RemoveComment(c.reviewComment)
 		if err != nil {
+			c.Tracking().CaptureException(err)
 			githubactions.Debugf("Failed to remove review comment: %v", err)
 		}
 		c.SetReviewComment(nil) // Reset review comment

@@ -21,6 +21,7 @@ func Default(client *github.Client) {
 	pullRequest, err := client.GetPullRequest()
 
 	if err != nil {
+		client.Tracking().CaptureException(err)
 		client.Fatalf("Failed to get pull request: %v", err)
 	}
 
@@ -33,12 +34,14 @@ func Default(client *github.Client) {
 	content, err := templates.Render("welcome", nil)
 
 	if err != nil {
+		client.Tracking().CaptureException(err)
 		client.Fatalf("Failed to render template: %v", err)
 	}
 
 	issueComment, err := client.Comment(content)
 
 	if err != nil {
+		client.Tracking().CaptureException(err)
 		client.Fatalf("Failed to create comment: %v", err)
 	}
 
@@ -102,6 +105,7 @@ func Default(client *github.Client) {
 		})
 
 		if err != nil {
+			client.Tracking().CaptureException(err)
 			client.Fatalf("Failed to render template: %v", err)
 		}
 
@@ -112,6 +116,7 @@ func Default(client *github.Client) {
 		})
 
 		if err != nil {
+			client.Tracking().CaptureException(err)
 			client.Fatalf("Failed to render template: %v", err)
 		}
 
@@ -143,6 +148,7 @@ func Default(client *github.Client) {
 	})
 
 	if err != nil {
+		client.Tracking().CaptureException(err)
 		client.Fatalf("Failed to render template: %v", err)
 	}
 
@@ -150,12 +156,14 @@ func Default(client *github.Client) {
 		_, err := client.Approve()
 
 		if err != nil {
+			client.Tracking().CaptureException(err)
 			client.Fatalf("Failed to approve pull request: %v", err)
 		}
 
 		issueComment, err = client.EditComment(client.GetReviewComment(), reviewContent)
 
 		if err != nil {
+			client.Tracking().CaptureException(err)
 			client.Fatalf("Failed to edit comment: %v", err)
 		}
 
@@ -166,6 +174,7 @@ func Default(client *github.Client) {
 		_, err := client.Review(reviewContent)
 
 		if err != nil {
+			client.Tracking().CaptureException(err)
 			client.Fatalf("Failed to create review: %v", err)
 		}
 

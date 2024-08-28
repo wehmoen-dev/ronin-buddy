@@ -5,6 +5,7 @@ go 1.22
 require (
 	github.com/bradleyfalzon/ghinstallation/v2 v2.11.0
 	github.com/ethereum/go-ethereum v1.14.8
+	github.com/getsentry/sentry-go v0.28.1
 	github.com/go-playground/validator/v10 v10.22.0
 	github.com/google/go-github/v64 v64.0.0
 	github.com/sethvargo/go-githubactions v1.3.0

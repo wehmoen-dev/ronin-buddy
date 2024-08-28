@@ -21,7 +21,10 @@ inputs:
   app_private_key:
     description: 'The private key of your GitHub app'
     required: true
+  sentry_dsn:
+    description: 'The Sentry DSN for error reporting'
+    required: false
 
 runs:
   using: 'docker'
-  image: 'docker://reg.wehmoen.dev/github/ronin-buddy:v1.0.0'
+  image: 'docker://reg.wehmoen.dev/github/ronin-buddy:v1.1.0'
