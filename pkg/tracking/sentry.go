@@ -77,7 +77,7 @@ func (s *Sentry) CaptureException(err error) {
 			eventId := sentry.CaptureException(err)
 			ok := sentry.Flush(2 * time.Second)
 			if ok && eventId != nil {
-				githubactions.Debugf("Captured exception. Sentry ID: %s", eventId)
+				githubactions.Debugf("Captured exception. Sentry ID: %s", *eventId)
 			} else {
 				githubactions.Warningf("Failed to capture exception.")
 			}
