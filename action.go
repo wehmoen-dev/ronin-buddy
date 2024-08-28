@@ -18,6 +18,7 @@ func main() {
 	pullRequest, err := client.GetPullRequest()
 
 	if err != nil {
+		client.Tracking().CaptureException(err)
 		client.Fatalf("Failed to get pull request: %v", err)
 	}
 

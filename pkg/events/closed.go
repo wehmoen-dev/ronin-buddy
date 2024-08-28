@@ -15,6 +15,7 @@ func Closed(client *github.Client, request *github2.PullRequest) {
 
 	commit, err := client.GetCommit(request.GetMergeCommitSHA())
 	if err != nil {
+		client.Tracking().CaptureException(err)
 		client.Fatalf("Failed to get commit: %v", err)
 	}
 
@@ -42,6 +43,7 @@ func Closed(client *github.Client, request *github2.PullRequest) {
 	for _, file := range dataJsonFilesChanged {
 		newContent, err := client.GetFileContentAtSha(file, request.GetMergeCommitSHA())
 		if err != nil {
+			client.Tracking().CaptureException(err)
 			client.Fatalf("Failed to get file content: %v", err)
 		}
 		oldContent, err := client.GetFileContentAtSha(file, commit.Parents[0].GetSHA())
@@ -56,6 +58,7 @@ func Closed(client *github.Client, request *github2.PullRequest) {
 
 		err = json.Unmarshal(newContent, &newParsed)
 		if err != nil {
+			client.Tracking().CaptureException(err)
 			client.Fatalf("Failed to unmarshal new content: %v", err)
 		}
 
@@ -89,6 +92,7 @@ func Closed(client *github.Client, request *github2.PullRequest) {
 	err = slack.PostWebhook(client.Config().SlackWebhookUrl, webhookMessage)
 
 	if err != nil {
+		client.Tracking().CaptureException(err)
 		client.Fatalf("Failed to post message to slack: %v", err)
 	}
 
