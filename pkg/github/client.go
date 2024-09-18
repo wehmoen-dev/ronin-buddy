@@ -5,13 +5,15 @@ import (
 	"github.com/google/go-github/v64/github"
 	"github.com/sethvargo/go-githubactions"
 	"github.com/wehmoen-dev/ronin-buddy/pkg/config"
+	"github.com/wehmoen-dev/ronin-buddy/pkg/tracking"
 	"net/http"
 	"strconv"
 )
 
 type Client struct {
-	client *github.Client
-	cfg    *config.ActionConfig
+	client   *github.Client
+	cfg      *config.ActionConfig
+	tracking *tracking.Sentry
 
 	reviewComment *github.IssueComment
 }
@@ -23,6 +25,7 @@ type Client struct {
 func New() *Client {
 
 	cfg := config.FromContext()
+	tracker := tracking.New(cfg)
 	privateKey := []byte(cfg.AppPrivateKey)
 
 	appIdInt, err := strconv.Atoi(cfg.AppId)
@@ -42,8 +45,9 @@ func New() *Client {
 	innerClient := github.NewClient(&http.Client{Transport: itr})
 
 	client := &Client{
-		client: innerClient,
-		cfg:    cfg,
+		client:   innerClient,
+		cfg:      cfg,
+		tracking: tracker,
 	}
 
 	client.createMissingLabels()
@@ -53,6 +57,10 @@ func New() *Client {
 
 func (c *Client) R() *github.Client {
 	return c.client
+}
+
+func (c *Client) Tracking() *tracking.Sentry {
+	return c.tracking
 }
 
 func (c *Client) Config() *config.ActionConfig {

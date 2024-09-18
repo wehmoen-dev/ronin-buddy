@@ -26,6 +26,7 @@ func (c *Client) createMissingLabels() {
 	repoLabels, _, err := c.client.Issues.ListLabels(context.Background(), c.cfg.GithubContext.Owner, c.cfg.GithubContext.Repository, nil)
 
 	if err != nil {
+		c.Tracking().CaptureException(err)
 		c.Fatalf("Failed to list labels: %v", err)
 	}
 
@@ -37,6 +38,7 @@ func (c *Client) createMissingLabels() {
 			})
 
 			if err != nil {
+				c.Tracking().CaptureException(err)
 				c.Fatalf("Failed to create label: %v", err)
 			}
 
@@ -84,6 +86,7 @@ func (c *Client) issueHasLabel(label *Label) bool {
 	labels, _, err := c.client.Issues.ListLabelsByIssue(context.Background(), c.cfg.GithubContext.Owner, c.cfg.GithubContext.Repository, issue, nil)
 
 	if err != nil {
+		c.Tracking().CaptureException(err)
 		c.Fatalf("Failed to list labels: %v", err)
 	}
 
@@ -100,6 +103,7 @@ func (c *Client) addLabelToIssue(label *Label) {
 	_, _, err := c.client.Issues.AddLabelsToIssue(context.Background(), c.cfg.GithubContext.Owner, c.cfg.GithubContext.Repository, issue, []string{label.Name.String()})
 
 	if err != nil {
+		c.Tracking().CaptureException(err)
 		c.Fatalf("Failed to add label: %v", err)
 	}
 }
@@ -115,6 +119,7 @@ func (c *Client) removeLabelFromIssue(label *Label) {
 	_, err := c.client.Issues.RemoveLabelForIssue(context.Background(), c.cfg.GithubContext.Owner, c.cfg.GithubContext.Repository, issue, label.Name.String())
 
 	if err != nil {
+		c.Tracking().CaptureException(err)
 		c.Fatalf("Failed to remove label: %v", err)
 	}
 }
