@@ -2,7 +2,6 @@ package validate
 
 import (
 	"github.com/google/go-github/v64/github"
-	"github.com/sethvargo/go-githubactions"
 )
 
 type ProjectMetadata struct {
@@ -79,9 +78,7 @@ func (r *ProjectValidationResult) IsValid() bool {
 	}
 
 	// Check Logo validity if it was validated
-	if r.Logo == nil || !r.Logo.IsValid() {
-		githubactions.Debugf("Logo Valid: %v", r.Logo.Valid)
-		githubactions.Debugf("Logo Errors: %v", r.Logo.Errors)
+	if r.Logo != nil && !r.Logo.IsValid() {
 		return false
 	}
 
