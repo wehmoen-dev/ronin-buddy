@@ -1,6 +1,7 @@
 package validate
 
 import (
+	"errors"
 	"github.com/google/go-github/v64/github"
 	"github.com/sethvargo/go-githubactions"
 	"os"
@@ -60,9 +61,12 @@ func Run(files []*github.CommitFile) *PullRequestValidationResult {
 				githubactions.Debugf("Project %s has invalid logo.png: %v", project, logoResult)
 				result.Logo.Errors = logoResult
 			} else {
-				result.Logo.Valid = true
 				githubactions.Debugf("Project %s has valid logo.png", project)
 			}
+		} else {
+			result.Logo.Valid = false
+			result.Logo.Errors = append(result.Logo.Errors, errors.New("logo.png is missing but required"))
+			githubactions.Debugf("Project %s is missing logo.png", project)
 		}
 
 		githubactions.Debugf("Project %s validated as %t", project, result.IsValid())
