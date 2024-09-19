@@ -51,7 +51,7 @@ type ProjectValidationResultInner struct {
 
 func (c *ProjectValidationResultInner) IsValid() bool {
 	if !c.Validated {
-		return true
+		return false
 	}
 	return c.Valid && len(c.Errors) == 0
 }
@@ -79,7 +79,7 @@ func (r *ProjectValidationResult) IsValid() bool {
 	}
 
 	// Check Logo validity if it was validated
-	if r.Logo != nil && !r.Logo.IsValid() {
+	if r.Logo == nil || !r.Logo.IsValid() {
 		githubactions.Debugf("Logo Valid: %v", r.Logo.Valid)
 		githubactions.Debugf("Logo Errors: %v", r.Logo.Errors)
 		return false
