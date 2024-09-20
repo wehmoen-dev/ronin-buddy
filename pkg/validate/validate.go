@@ -35,6 +35,7 @@ func validateProjectMetadata(jsonData []byte) []error {
 		"websites":    {},
 		"contracts":   {},
 		"categories":  {},
+		"email":       {},
 		"social":      {},
 	}
 
