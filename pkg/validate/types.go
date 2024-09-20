@@ -10,7 +10,7 @@ type ProjectMetadata struct {
 	Websites    []Website   `json:"websites" validate:"required"`
 	Contracts   *[]Contract `json:"contracts" validate:"required,omitempty"`
 	Categories  []Category  `json:"categories" validate:"required"`
-	Email       *string     `json:"email,omitempty" validate:"email,omitempty"`
+	Email       *string     `json:"email,omitempty" validate:"omitempty,email"`
 	Social      *Social     `json:"social,omitempty"`
 }
 
