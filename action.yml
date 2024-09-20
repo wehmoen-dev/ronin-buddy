@@ -27,4 +27,4 @@ inputs:
 
 runs:
   using: 'docker'
-  image: 'docker://reg.wehmoen.dev/github/ronin-buddy:v1.1.0'
+  image: 'docker://reg.wehmoen.dev/github/ronin-buddy:v1.2.1'
