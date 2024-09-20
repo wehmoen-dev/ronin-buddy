@@ -49,7 +49,7 @@ func validateProjectMetadata(jsonData []byte) []error {
 		if mail != "" {
 			validate := validator.New()
 			if err := validate.Var(mail, "email"); err != nil {
-				errors = append(errors, fmt.Errorf("email is not a valid email"))
+				errors = append(errors, fmt.Errorf("the provided email is not a valid email address"))
 			}
 		}
 	}
