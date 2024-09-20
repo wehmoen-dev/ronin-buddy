@@ -35,13 +35,21 @@ func validateProjectMetadata(jsonData []byte) []error {
 		"websites":    {},
 		"contracts":   {},
 		"categories":  {},
-		"email":       {},
 		"social":      {},
 	}
 
 	for key := range rawData {
 		if _, ok := expectedFields[key]; !ok {
 			errors = append(errors, fmt.Errorf("extra key: %s", key))
+		}
+	}
+
+	if mail, ok := rawData["email"].(string); ok {
+		if mail != "" {
+			validate := validator.New()
+			if err := validate.Var(mail, "email"); err != nil {
+				errors = append(errors, fmt.Errorf("email is not a valid email"))
+			}
 		}
 	}
 

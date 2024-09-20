@@ -10,7 +10,7 @@ type ProjectMetadata struct {
 	Websites    []Website   `json:"websites" validate:"required"`
 	Contracts   *[]Contract `json:"contracts" validate:"required,omitempty"`
 	Categories  []Category  `json:"categories" validate:"required"`
-	Email       *string     `json:"email,omitempty" validate:"omitempty,email"`
+	Email       *string     `json:"email,omitempty" validate:"omitempty"`
 	Social      *Social     `json:"social,omitempty"`
 }
 
@@ -50,7 +50,7 @@ type ProjectValidationResultInner struct {
 
 func (c *ProjectValidationResultInner) IsValid() bool {
 	if !c.Validated {
-		return false
+		return true
 	}
 	return c.Valid && len(c.Errors) == 0
 }
