@@ -5,7 +5,6 @@ import (
 )
 
 type ActionConfig struct {
-	GithubToken     string
 	SlackWebhookUrl string
 
 	AppInstallationId string
@@ -21,7 +20,6 @@ type ActionConfig struct {
 
 func FromContext() *ActionConfig {
 	cfg := &ActionConfig{
-		GithubToken:       githubactions.GetInput("github_token"),
 		SlackWebhookUrl:   githubactions.GetInput("slack_webhook_url"),
 		AppInstallationId: githubactions.GetInput("app_installation_id"),
 		AppId:             githubactions.GetInput("app_id"),
@@ -49,12 +47,6 @@ func FromContext() *ActionConfig {
 		Owner:         owner,
 		Repository:    repo,
 	}
-
-	if cfg.GithubToken == "" {
-		githubactions.Fatalf(`Missing required input: %s`, "github_token")
-	}
-
-	githubactions.AddMask(cfg.GithubToken)
 
 	if cfg.AppInstallationId == "" {
 		githubactions.Fatalf(`Missing required input: %s`, "app_installation_id")

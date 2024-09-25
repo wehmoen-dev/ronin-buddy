@@ -6,9 +6,6 @@ branding:
   color: 'gray-dark'
 
 inputs:
-  github_token:
-    description: 'The GitHub token to authenticate API requests'
-    required: true
   slack_webhook_url:
     description: 'Slack webhook URL for TDS notifications.'
     required: true
@@ -27,4 +24,4 @@ inputs:
 
 runs:
   using: 'docker'
-  image: 'docker://reg.wehmoen.dev/github/ronin-buddy:v1.2.2'
+  image: 'docker://reg.wehmoen.dev/github/ronin-buddy:v1.2.3'
