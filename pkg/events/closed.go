@@ -69,15 +69,22 @@ func Closed(client *github.Client, request *github2.PullRequest) {
 			}
 		}
 
+		tdsClient := utils.NewTrustedDomainClient()
+
 		for _, newSite := range newParsed.Websites {
 			if !utils.InList(oldParsed.Websites, newSite) {
-				addedWebsites = append(addedWebsites, newSite)
+
+				if !tdsClient.IsWhitelisted(newSite.Url) {
+					addedWebsites = append(addedWebsites, newSite)
+				}
 			}
 		}
 
 		for _, oldSite := range oldParsed.Websites {
 			if !utils.InList(newParsed.Websites, oldSite) {
-				removedWebsites = append(removedWebsites, oldSite)
+				if tdsClient.IsWhitelisted(oldSite.Url) {
+					removedWebsites = append(removedWebsites, oldSite)
+				}
 			}
 		}
 	}
