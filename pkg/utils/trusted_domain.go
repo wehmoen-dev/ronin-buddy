@@ -3,6 +3,7 @@ package utils
 import (
 	"github.com/go-resty/resty/v2"
 	"net/http"
+	"net/url"
 )
 
 type TrustedDomainClient struct {
@@ -20,7 +21,14 @@ func NewTrustedDomainClient() *TrustedDomainClient {
 }
 
 func (c *TrustedDomainClient) IsWhitelisted(domain string) bool {
-	resp, err := c.c.R().Get(domain)
+
+	parsedDomain, err := url.Parse(domain)
+
+	if err != nil {
+		return false
+	}
+
+	resp, err := c.c.R().Get(parsedDomain.Hostname())
 
 	if err != nil {
 		return false
