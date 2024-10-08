@@ -61,6 +61,7 @@ func Default(client *github.Client) {
 		projectStatus := validate.ResultFailed
 
 		if result.IsValid() {
+			githubactions.Debugf("Project %s is considered valid", project)
 			projectStatus = validate.ResultPassed
 		}
 
@@ -123,12 +124,6 @@ func Default(client *github.Client) {
 		projectResultContent = append(projectResultContent, resultContent)
 	}
 
-	if validationResults.IsValid() {
-		client.SetStatus(github.ReviewStatusPassed)
-	} else {
-		client.SetStatus(github.ReviewStatusFailed)
-	}
-
 	globalUnassociatedFiles := "\n\n#### 👻 Unassociated files"
 
 	if len(validationResults.UnassociatedFiles) > 0 {
@@ -169,6 +164,12 @@ func Default(client *github.Client) {
 
 		client.SetReviewComment(issueComment)
 
+		if validationResults.IsValid() {
+			client.SetStatus(github.ReviewStatusPassed)
+		} else {
+			client.SetStatus(github.ReviewStatusFailed)
+		}
+
 		os.Exit(0)
 	} else {
 		_, err := client.Review(reviewContent)
@@ -178,6 +179,13 @@ func Default(client *github.Client) {
 			client.Fatalf("Failed to create review: %v", err)
 		}
 
+		if validationResults.IsValid() {
+			client.SetStatus(github.ReviewStatusPassed)
+		} else {
+			client.SetStatus(github.ReviewStatusFailed)
+		}
+
 		os.Exit(1)
 	}
+
 }
