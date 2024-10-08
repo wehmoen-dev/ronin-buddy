@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func validateProjectMetadata(jsonData []byte) []error {
+func ValidateProjectMetadata(jsonData []byte) []error {
 	var data ProjectMetadata
 	var errors []error
 

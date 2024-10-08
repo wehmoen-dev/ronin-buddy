@@ -45,7 +45,7 @@ func Run(files []*github.CommitFile) *PullRequestValidationResult {
 				githubactions.Debugf("Failed to read data.json for project %s: %v", project, err)
 				continue
 			}
-			metaDataResult := validateProjectMetadata(content)
+			metaDataResult := ValidateProjectMetadata(content)
 			if len(metaDataResult) > 0 {
 				githubactions.Debugf("Project %s has invalid data.json: %v", project, metaDataResult)
 				result.MetaData.Errors = metaDataResult
