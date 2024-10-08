@@ -73,13 +73,13 @@ func Run(files []*github.CommitFile) *PullRequestValidationResult {
 					githubactions.Debugf("Project %s is missing logo.png", project)
 					result.Logo.Valid = false
 					result.Logo.Errors = append(result.Logo.Errors, errors.New("logo.png is missing but required"))
-					continue
 				}
+			} else {
+				result.Logo.Valid = false
+				result.Logo.Errors = append(result.Logo.Errors, errors.New("logo.png is missing but required"))
+				githubactions.Debugf("Project %s is missing logo.png", project)
 			}
 
-			result.Logo.Valid = false
-			result.Logo.Errors = append(result.Logo.Errors, errors.New("logo.png is missing but required"))
-			githubactions.Debugf("Project %s is missing logo.png", project)
 		}
 
 		githubactions.Debugf("Project %s validated as %t", project, result.IsValid())
